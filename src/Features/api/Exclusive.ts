@@ -44,6 +44,9 @@ const exclusiveApi = createApi({
         method: "DELETE",
       }),
     }),
+    getSubCategory: builder.query<any, any>({
+      query: () => "/v1/subcategory",
+    }),
   }),
 });
 
@@ -57,4 +60,5 @@ export const {
   useGetAllCategoriesQuery,
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
+  useGetSubCategoryQuery,
 } = exclusiveApi;

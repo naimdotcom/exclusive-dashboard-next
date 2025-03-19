@@ -1,15 +1,9 @@
 import {
-  AudioWaveform,
-  BookOpen,
   Bot,
-  Calendar,
-  Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
   House,
   RectangleHorizontal,
   ListMinus,
@@ -55,7 +49,7 @@ const sidebarItem = {
         },
         {
           title: "Sub-Category",
-          url: "/home/",
+          url: "/home/sub-category",
           icon: TextQuote,
         },
         // {
