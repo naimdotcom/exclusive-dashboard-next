@@ -169,9 +169,10 @@ import {
 type Props<T> = {
   data: T[];
   columns: ColumnDef<T>[];
+  searchId?: string;
 };
 
-export function DataTable<T>({ data, columns }: Props<T>) {
+export function DataTable<T>({ data, columns, searchId = "title" }: Props<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -205,10 +206,10 @@ export function DataTable<T>({ data, columns }: Props<T>) {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter by title..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+          placeholder={`Search ${searchId}...`}
+          value={(table.getColumn(searchId)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
+            table.getColumn(searchId)?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

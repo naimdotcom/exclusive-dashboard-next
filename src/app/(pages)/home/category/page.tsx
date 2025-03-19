@@ -25,16 +25,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useGetAllCategoriesQuery } from "@/Features/api/Exclusive";
+import { DataTable } from "@/components/dataTable/FilterTable";
 
-export type Banner = {
+export type Category = {
   _id: string;
   image: string;
-  title: string;
+  name: string;
   createdAt: string;
   updatedAt: string;
+  product: string[]; // todo: change to product type
+  subCategory: string[]; // todo: change to subCategory type
 };
 
-export const BannerColumns: ColumnDef<Banner>[] = [
+export const categoryColumns: ColumnDef<Category>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -64,19 +68,17 @@ export const BannerColumns: ColumnDef<Banner>[] = [
   },
   // title
   {
-    accessorKey: "title",
+    accessorKey: "name",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        <span className="mr-2">Title</span>
+        <span className="mr-2">Name</span>
         <ArrowUpDown />
       </Button>
     ),
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
-    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   // data
   {
@@ -117,7 +119,7 @@ export const BannerColumns: ColumnDef<Banner>[] = [
       <img
         src={row.getValue("image")}
         alt="Banner"
-        className="h-44 w-96 shadow object-cover rounded-md"
+        className="h-24 w-24 shadow object-cover rounded-md"
       />
     ),
   },
@@ -161,6 +163,8 @@ const page = ({}: Props) => {
   const [imageLoc, setImageLoc] = useState<File | null>();
   const [createLoading, setCreateLoading] = useState<boolean>(false);
 
+  const { data } = useGetAllCategoriesQuery({});
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; // Get the first selected file
     if (file) {
@@ -201,6 +205,8 @@ const page = ({}: Props) => {
     //     .finally(() => setCreateLoading(false));
   };
 
+  console.log(data);
+
   return (
     <div>
       <div className="flex gap-4">
@@ -210,7 +216,7 @@ const page = ({}: Props) => {
             <Input
               type="text"
               id="title"
-              placeholder="Banner Title"
+              placeholder="Category Title"
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
@@ -227,34 +233,15 @@ const page = ({}: Props) => {
         <div className="flex flex-col mt-4 w-4/6">
           <h2>Preview</h2>
           <div>
-            {file ? (
-              <Carousel className="w-2/3 mx-20 ">
-                <CarouselContent>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <CarouselItem key={index}>
-                      <div className="p-1">
-                        <Card>
-                          <CardContent className="flex aspect-[16/9] items-center justify-center p-6">
-                            {file ? (
-                              <img
-                                src={file}
-                                alt=""
-                                className="max-h-[50%] w-full object-cover"
-                              />
-                            ) : (
-                              <span className="text-4xl font-semibold">
-                                No picture selected
-                              </span>
-                            )}
-                          </CardContent>
-                        </Card>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-              </Carousel>
+            {file && title ? (
+              <div className="flex justify-center flex-col">
+                <img
+                  src={file}
+                  alt="category"
+                  className="h-16 w-16 shadow object-cover rounded-md"
+                />
+                <h1 className="text-gray-600 mx-4 text-md ">{title}</h1>
+              </div>
             ) : (
               <h1 className="text-gray-600 mx-4 text-md ">
                 choose thumbail first
@@ -267,6 +254,17 @@ const page = ({}: Props) => {
         <Button className="w-full mt-4" onClick={handleSubmit}>
           {createLoading ? "Creating..." : "Create Banner"}
         </Button>
+      </div>
+
+      <div className="mt-10 ">
+        table
+        <div>
+          <DataTable<Category>
+            data={data?.data ? data?.data : []}
+            columns={categoryColumns}
+            searchId="name"
+          />
+        </div>
       </div>
     </div>
   );

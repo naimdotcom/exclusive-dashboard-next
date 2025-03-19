@@ -40,4 +40,5 @@ export const {
   useGetBannerQuery,
   useCreateBannerMutation,
   useDeleteBannerMutation,
+  useGetAllCategoriesQuery,
 } = exclusiveApi;
