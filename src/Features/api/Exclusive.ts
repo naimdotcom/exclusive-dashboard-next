@@ -54,6 +54,12 @@ const exclusiveApi = createApi({
         body: data,
       }),
     }),
+    deleteSubCategory: builder.mutation<any, any>({
+      query: (id) => ({
+        url: `/v1/subcategory/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -68,4 +74,6 @@ export const {
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
   useGetSubCategoryQuery,
+  useCreateSubCategoryMutation,
+  useDeleteSubCategoryMutation,
 } = exclusiveApi;
