@@ -47,6 +47,13 @@ const exclusiveApi = createApi({
     getSubCategory: builder.query<any, any>({
       query: () => "/v1/subcategory",
     }),
+    createSubCategory: builder.mutation<any, any>({
+      query: (data) => ({
+        url: "/v1/subcategory",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 

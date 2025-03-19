@@ -5,6 +5,13 @@ import {
 } from "@/Features/api/Exclusive";
 import React, { useEffect, useState } from "react";
 import { Category } from "../category/page";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -156,32 +163,23 @@ export const subCategoryColumns: ColumnDef<subCategory>[] = [
 
 const page = (props: Props) => {
   const [title, setTitle] = useState<string>("");
-  const [file, setFile] = useState<string | null>();
-  const [imageLoc, setImageLoc] = useState<File | null>();
+  const [categoryId, setCategoryId] = useState<string>("");
   const [createLoading, setCreateLoading] = useState<boolean>(false);
   const [category, setCategory] = useState<[]>([]);
 
   const { data } = useGetSubCategoryQuery({});
   const { data: categories } = useGetAllCategoriesQuery({});
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]; // Get the first selected file
-    if (file) {
-      setFile(URL.createObjectURL(file)); // Create a preview URL
-      setImageLoc(file);
-    }
-  };
-
   const handleSubmit = async () => {
     setCreateLoading(true);
-    if (!title || !imageLoc) {
+    if (!title || !categoryId) {
       errorToast({ message: "Please fill all the fields" });
       setCreateLoading(false);
       return;
     }
     const formData = new FormData();
     formData.append("name", title);
-    formData.append("image", imageLoc ? imageLoc : "");
+    formData.append("categoryId", categoryId);
 
     formData.forEach((value, key) => console.log(key, value));
 
@@ -210,33 +208,48 @@ const page = (props: Props) => {
     }
   }, [categories]);
 
-  console.log(data);
   return (
     <div>
       <div className="flex gap-4">
-        <div className="flex gap-4">
+        <div className="flex gap-4 w-full">
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="title">Category Name</Label>
             <Input
               type="text"
               id="title"
               placeholder="Category Title"
+              className="w-full"
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="title">Category Name</Label>
-            <select>
-              {category?.map((item: any) => (
-                <option value={item._id}>{item.name}</option>
-              ))}
-            </select>
+            <Select onValueChange={(e) => setCategoryId(e)}>
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder="Category"
+                  className="w-full capitalize"
+                />
+              </SelectTrigger>
+              <SelectContent className="w-full">
+                {category.length &&
+                  category.map((item: any) => (
+                    <SelectItem
+                      value={item._id}
+                      className="capitalize"
+                      key={item._id}
+                    >
+                      {item.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
       <div>
         <Button className="w-full mt-4" onClick={handleSubmit}>
-          {createLoading ? "Creating..." : "Create Banner"}
+          {createLoading ? "Creating..." : "Create subcategory"}
         </Button>
       </div>
       <div className="mt-10 ">
