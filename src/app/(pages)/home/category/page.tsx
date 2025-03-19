@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { errorToast } from "@/utils/Toast/toast";
+import { errorToast, successToast } from "@/utils/Toast/toast";
 import { useState } from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -25,7 +25,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useGetAllCategoriesQuery } from "@/Features/api/Exclusive";
+import {
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation,
+  useGetAllCategoriesQuery,
+} from "@/Features/api/Exclusive";
 import { DataTable } from "@/components/dataTable/FilterTable";
 
 export type Category = {
@@ -130,7 +134,7 @@ export const categoryColumns: ColumnDef<Category>[] = [
     cell: ({ row }) => {
       const banner = row.original;
       const { _id } = banner;
-      //   const [deleteBanner] = useDeleteBannerMutation();
+      const [deleteItem] = useDeleteCategoryMutation();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -147,7 +151,21 @@ export const categoryColumns: ColumnDef<Category>[] = [
               Copy Banner ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => {}}>Delete</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                deleteItem(_id)
+                  .then(() => {
+                    successToast({ message: "category Deleted Successfully" });
+                    successToast({ message: "Refresh the page" });
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    errorToast({ message: "something went wrong" });
+                  });
+              }}
+            >
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -163,7 +181,8 @@ const page = ({}: Props) => {
   const [imageLoc, setImageLoc] = useState<File | null>();
   const [createLoading, setCreateLoading] = useState<boolean>(false);
 
-  const { data } = useGetAllCategoriesQuery({});
+  const { data, refetch } = useGetAllCategoriesQuery({});
+  const [createCategory] = useCreateCategoryMutation();
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; // Get the first selected file
@@ -181,28 +200,28 @@ const page = ({}: Props) => {
       return;
     }
     const formData = new FormData();
-    formData.append("title", title);
+    formData.append("name", title);
     formData.append("image", imageLoc ? imageLoc : "");
 
     formData.forEach((value, key) => console.log(key, value));
 
-    //   await createBanner(formData)
-    //     .unwrap()
-    //     .then((res) => {
-    //       successToast({ message: "Banner Created Successfully" });
-    //       setTitle("");
-    //       setFile(null);
-    //       refetch();
-    //     })
-    //     .catch((err) => {
-    //       errorToast({
-    //         message: err.data.message
-    //           ? err.data.message
-    //           : "something went wrong while creating banner",
-    //       });
-    //       console.log("error in create banner", err);
-    //     })
-    //     .finally(() => setCreateLoading(false));
+    await createCategory(formData)
+      .unwrap()
+      .then((res) => {
+        successToast({ message: "Category Created Successfully" });
+        setTitle("");
+        setFile(null);
+        refetch();
+      })
+      .catch((err) => {
+        errorToast({
+          message: err.data.message
+            ? err.data.message
+            : "something went wrong while creating category",
+        });
+        console.log("error in create category", err);
+      })
+      .finally(() => setCreateLoading(false));
   };
 
   console.log(data);

@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { create } from "domain";
 import { Delete } from "lucide-react";
 
 const exclusiveApi = createApi({
@@ -30,6 +31,19 @@ const exclusiveApi = createApi({
     getAllCategories: builder.query<any, any>({
       query: () => "/v1/category",
     }),
+    createCategory: builder.mutation<any, any>({
+      query: (data) => ({
+        url: "/v1/category",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    deleteCategory: builder.mutation<any, any>({
+      query: (id) => ({
+        url: `/v1/category/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -41,4 +55,6 @@ export const {
   useCreateBannerMutation,
   useDeleteBannerMutation,
   useGetAllCategoriesQuery,
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation,
 } = exclusiveApi;
