@@ -30,12 +30,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 type Props = {};
 
-type Product = {
+export type Product = {
   _id: string;
   name: string;
   description: string;
   price: number;
-  quantity: number;
+  stock: number;
   category: string;
   subCategory: string;
   image: File[] | string[];
@@ -50,7 +50,7 @@ const Page = ({}: Props) => {
     name: "",
     description: "",
     price: 0,
-    quantity: 0,
+    stock: 0,
     category: "",
     subCategory: "",
     image: [],
@@ -92,7 +92,7 @@ const Page = ({}: Props) => {
       !productData.name ||
       !productData.description ||
       productData.price <= 0 ||
-      productData.quantity <= 0 ||
+      productData.stock <= 0 ||
       !productData.category ||
       !productData.subCategory ||
       productData.image.length === 0 ||
@@ -113,7 +113,7 @@ const Page = ({}: Props) => {
     formData.append("color", productData.color);
     formData.append("categoryId", productData.category);
     formData.append("subcategoryId", productData.subCategory);
-    formData.append("quantity", productData.quantity.toString());
+    formData.append("quantity", productData.stock.toString());
     formData.append("discount", productData.discount.toString());
     productData.image.forEach((image) => formData.append("image", image));
 

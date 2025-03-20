@@ -61,12 +61,17 @@ const sidebarItem = {
     },
     {
       title: "Exclusive",
-      url: "#",
+      url: "/exclusive",
       icon: Bot,
       items: [
         {
           title: "Product",
           url: "/exclusive/product",
+          icon: ShoppingCart,
+        },
+        {
+          title: "Product List",
+          url: "/exclusive/product-list",
           icon: ShoppingCart,
         },
         {
