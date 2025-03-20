@@ -41,7 +41,7 @@ export type subCategory = {
   createdAt: string;
   updatedAt: string;
   product: string[]; // todo: change to product type
-  category: Category[]; // todo: change to subCategory type
+  category: Category[];
 };
 
 export const subCategoryColumns: ColumnDef<subCategory>[] = [

@@ -66,7 +66,7 @@ const sidebarItem = {
       items: [
         {
           title: "Product",
-          url: "#",
+          url: "/exclusive/product",
           icon: ShoppingCart,
         },
         {
