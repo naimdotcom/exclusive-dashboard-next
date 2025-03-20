@@ -179,6 +179,7 @@ function page() {
   const [imageLoc, setImageLoc] = useState<File | null>();
   const [createLoading, setCreateLoading] = useState<boolean>(false);
   const [createBanner] = useCreateBannerMutation();
+
   const { data, refetch } = useGetBannerQuery({});
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
