@@ -16,7 +16,7 @@ const sidebarItem = {
   user: {
     name: "exclusive",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "",
   },
   teams: [
     {
