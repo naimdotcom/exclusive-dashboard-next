@@ -15,8 +15,6 @@ import React, { useEffect, useState } from "react";
 import {
   useCreateProductMutation,
   useGetAllCategoriesQuery,
-  useGetSubCategoryByCategoryQuery,
-  useGetSubCategoryQuery,
 } from "@/Features/api/Exclusive";
 import { Category } from "../../home/category/page";
 import { subCategory } from "../../home/sub-category/page";
