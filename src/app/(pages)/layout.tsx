@@ -41,7 +41,10 @@ export default function RootLayout({
                       const isLast = index === pathSegments.length - 1;
 
                       return (
-                        <>
+                        <div
+                          className="flex items-center justify-center"
+                          key={href}
+                        >
                           {index > 0 && (
                             <BreadcrumbSeparator key={`sep-${index}`} />
                           )}
@@ -56,7 +59,7 @@ export default function RootLayout({
                               </BreadcrumbLink>
                             )}
                           </BreadcrumbItem>
-                        </>
+                        </div>
                       );
                     })}
                   </BreadcrumbList>
