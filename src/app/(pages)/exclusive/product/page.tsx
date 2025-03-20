@@ -60,13 +60,11 @@ const Page = ({}: Props) => {
     _id: "",
     color: "",
   });
+  const [subcategory, setSubcategory] = useState<[]>([]);
   const [createLoading, setCreateLoading] = useState<boolean>(false);
   const [selectedSizes, setSelectedSizes] = useState<string[]>(["S"]);
   const { data: categories } = useGetAllCategoriesQuery({});
-  // const { data: subCategories } = useGetSubCategoryQuery({});
   const [createProduct] = useCreateProductMutation();
-  const { data: subCategories, refetch: subCategoryRefetch } =
-    useGetSubCategoryByCategoryQuery(productData.category);
 
   const handleSizeChange = (size: string) => {
     setSelectedSizes((prev) =>
@@ -136,11 +134,7 @@ const Page = ({}: Props) => {
       .finally(() => setCreateLoading(false));
   };
 
-  useEffect(() => {
-    subCategoryRefetch();
-
-    console.log(subCategories);
-  }, [productData.category]);
+  console.log(subcategory);
 
   return (
     <div>
@@ -239,9 +233,13 @@ const Page = ({}: Props) => {
               Product Category <span className="text-red-500">*</span>
             </Label>
             <Select
-              onValueChange={(value) =>
-                setProductData((prev) => ({ ...prev, category: value }))
-              }
+              onValueChange={(value) => {
+                setProductData((prev) => ({ ...prev, category: value }));
+                setSubcategory(
+                  categories?.data.filter((c: Category) => c._id == value)?.[0]
+                    .subCategory
+                );
+              }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a category" />
@@ -274,7 +272,7 @@ const Page = ({}: Props) => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Sub Categories</SelectLabel>
-                  {subCategories?.data.map((subCategory: subCategory) => (
+                  {subcategory?.map((subCategory: subCategory) => (
                     <SelectItem value={subCategory._id} key={subCategory._id}>
                       {subCategory.name}
                     </SelectItem>

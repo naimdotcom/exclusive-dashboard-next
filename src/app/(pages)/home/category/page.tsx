@@ -31,6 +31,7 @@ import {
   useGetAllCategoriesQuery,
 } from "@/Features/api/Exclusive";
 import { DataTable } from "@/components/dataTable/FilterTable";
+import { subCategory } from "../sub-category/page";
 
 export type Category = {
   _id: string;
@@ -39,7 +40,7 @@ export type Category = {
   createdAt: string;
   updatedAt: string;
   product: string[]; // todo: change to product type
-  subCategory: string[]; // todo: change to subCategory type
+  subCategory: subCategory[]; // todo: change to subCategory type
 };
 
 export const categoryColumns: ColumnDef<Category>[] = [
