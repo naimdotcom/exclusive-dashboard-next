@@ -6,34 +6,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { subCategory } from "../../home/sub-category/page";
+
 import { Button } from "@/components/ui/button";
 import { Product } from "../product/page";
 import { DataTable } from "@/components/dataTable/FilterTable";
 import { useGetAllProductQuery } from "@/Features/api/Exclusive";
 import truncateWords from "@/utils/truncateWords";
-
-type Props = {};
-
-// export type product = {
-//   _id: string;
-//   image: string;
-//   name: string;
-//   description: string;
-//   createdAt: string;
-//   updatedAt: string;
-//   product: string[]; // todo: change to product type
-//   subCategory: subCategory[]; // todo: change to subCategory type
-//   price: number;
-//   rating: number;
-// };
 
 export const productColumns: ColumnDef<Product>[] = [
   {
@@ -212,11 +196,13 @@ export const productColumns: ColumnDef<Product>[] = [
   },
 ];
 
+type Props = {};
+
 const page = ({}: Props) => {
   const { data } = useGetAllProductQuery({});
   return (
     <div>
-      <div className="mt-10 ">
+      <div className="mt-10">
         table
         <div>
           <DataTable<Product>

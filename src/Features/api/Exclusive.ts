@@ -68,6 +68,9 @@ const exclusiveApi = createApi({
         body: data,
       }),
     }),
+    getProductById: builder.query<any, any>({
+      query: (id) => `/v1/product/${id}`,
+    }),
   }),
 });
 
@@ -85,4 +88,5 @@ export const {
   useCreateSubCategoryMutation,
   useDeleteSubCategoryMutation,
   useCreateProductMutation,
+  useGetProductByIdQuery,
 } = exclusiveApi;
