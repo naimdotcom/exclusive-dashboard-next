@@ -62,6 +62,7 @@ const sidebarItem = {
     {
       title: "Exclusive",
       url: "/exclusive",
+      isAction: true,
       icon: Bot,
       items: [
         {

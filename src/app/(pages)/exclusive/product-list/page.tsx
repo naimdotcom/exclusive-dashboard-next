@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -15,6 +16,8 @@ import {
 import { subCategory } from "../../home/sub-category/page";
 import { Button } from "@/components/ui/button";
 import { Product } from "../product/page";
+import { DataTable } from "@/components/dataTable/FilterTable";
+import { useGetAllProductQuery } from "@/Features/api/Exclusive";
 
 type Props = {};
 
@@ -31,7 +34,7 @@ type Props = {};
 //   rating: number;
 // };
 
-export const categoryColumns: ColumnDef<Product>[] = [
+export const productColumns: ColumnDef<Product>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -54,99 +57,108 @@ export const categoryColumns: ColumnDef<Product>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "_id",
-    header: "ID",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("_id")}</div>,
-  },
+
   // title
   {
     accessorKey: "name",
     header: ({ column }) => (
       <Button
+        className="w-full flex justify-center"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        <span className="mr-2">Name</span>
+        <span>Name</span>
         <ArrowUpDown />
       </Button>
     ),
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    cell: ({ row }) => (
+      <div className="text-center capitalize">{row.getValue("name")}</div>
+    ),
   },
   {
     accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => <div className="">{row.getValue("description")}</div>,
+    header: ({ column }) => (
+      <Button className="w-full flex justify-center" variant="ghost">
+        <span>Description</span>
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("description")}</div>
+    ),
   },
   {
     accessorKey: "price",
     header: ({ column }) => (
       <Button
+        className="w-full flex justify-center"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        <span className="mr-2">Price</span>
+        <span>Price</span>
         <ArrowUpDown />
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("price")}</div>
+      <div className="text-center capitalize">{row.getValue("price")}</div>
     ),
   },
   {
     accessorKey: "stock",
     header: ({ column }) => (
       <Button
+        className="w-full flex justify-center"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        <span className="mr-2">Stock</span>
+        <span>Stock</span>
         <ArrowUpDown />
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("stock")}</div>
+      <div className="text-center capitalize">{row.getValue("stock")}</div>
     ),
   },
   {
     accessorKey: "discount",
     header: ({ column }) => (
       <Button
+        className="w-full flex justify-center"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        <span className="mr-2">Discount</span>
+        <span>Discount</span>
         <ArrowUpDown />
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("discount")}</div>
+      <div className="text-center capitalize">{row.getValue("discount")}</div>
     ),
   },
   {
     accessorKey: "rating",
     header: ({ column }) => (
       <Button
+        className="w-full flex justify-center"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        <span className="mr-2">Rating</span>
+        <span>Rating</span>
         <ArrowUpDown />
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("rating")}</div>
+      <div className="text-center capitalize">{row.getValue("rating")}</div>
     ),
   },
-  // data
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
       <Button
+        className="w-full flex justify-center"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        <span className="mr-2">Date</span>
+        <span>Date</span>
         <ArrowUpDown />
       </Button>
     ),
@@ -163,21 +175,17 @@ export const categoryColumns: ColumnDef<Product>[] = [
         hour12: true,
       });
       return (
-        <div className="capitalize">
+        <div className="text-center capitalize">
           {DateD} - {time}
         </div>
       );
     },
   },
-  // image
-  // actions
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const banner = row.original;
-      const { _id } = banner;
-      //   const [deleteItem] = useDeleteCategoryMutation();
+      const product = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -189,26 +197,12 @@ export const categoryColumns: ColumnDef<Product>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(banner._id)}
+              onClick={() => navigator.clipboard.writeText(product._id)}
             >
-              Copy Banner ID
+              Copy Product ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                // deleteItem(_id)
-                //   .then(() => {
-                //     successToast({ message: "category Deleted Successfully" });
-                //     successToast({ message: "Refresh the page" });
-                //   })
-                //   .catch((err) => {
-                //     console.log(err);
-                //     errorToast({ message: "something went wrong" });
-                //   });
-              }}
-            >
-              Delete
-            </DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -217,7 +211,21 @@ export const categoryColumns: ColumnDef<Product>[] = [
 ];
 
 const page = ({}: Props) => {
-  return <div>page</div>;
+  const { data } = useGetAllProductQuery({});
+  return (
+    <div>
+      <div className="mt-10 ">
+        table
+        <div>
+          <DataTable<Product>
+            data={data?.data ? data?.data : []}
+            columns={productColumns}
+            searchId="name"
+          />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default page;

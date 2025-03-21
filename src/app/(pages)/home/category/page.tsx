@@ -47,53 +47,65 @@ export const categoryColumns: ColumnDef<Category>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
+      <div className="text-center">
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      </div>
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <div className="text-center">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,
   },
   {
     accessorKey: "_id",
-    header: "ID",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("_id")}</div>,
+    header: ({ column }) => (
+      <Button variant="ghost" className="w-full text-center">
+        <span className="">ID</span>
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="capitalize text-center">{row.getValue("_id")}</div>
+    ),
   },
-  // title
   {
     accessorKey: "name",
     header: ({ column }) => (
       <Button
         variant="ghost"
+        className="w-full text-center"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        <span className="mr-2">Name</span>
+        <span className=" ">Name</span>
         <ArrowUpDown />
       </Button>
     ),
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize text-center">{row.getValue("name")}</div>
+    ),
   },
-  // data
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
       <Button
         variant="ghost"
+        className="w-full text-center"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        <span className="mr-2">Date</span>
+        <span className=" ">Date</span>
         <ArrowUpDown />
       </Button>
     ),
@@ -110,25 +122,25 @@ export const categoryColumns: ColumnDef<Category>[] = [
         hour12: true,
       });
       return (
-        <div className="capitalize">
+        <div className="capitalize text-center">
           {DateD} - {time}
         </div>
       );
     },
   },
-  // image
   {
     accessorKey: "image",
-    header: "Image",
+    header: () => <div className="text-center">Image</div>,
     cell: ({ row }) => (
-      <img
-        src={row.getValue("image")}
-        alt="Banner"
-        className="h-24 w-24 shadow object-cover rounded-md"
-      />
+      <div className="text-center">
+        <img
+          src={row.getValue("image")}
+          alt="Banner"
+          className="h-24 w-24 shadow object-cover rounded-md mx-auto"
+        />
+      </div>
     ),
   },
-  // actions
   {
     id: "actions",
     enableHiding: false,
@@ -137,38 +149,42 @@ export const categoryColumns: ColumnDef<Category>[] = [
       const { _id } = banner;
       const [deleteItem] = useDeleteCategoryMutation();
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(banner._id)}
-            >
-              Copy Banner ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                deleteItem(_id)
-                  .then(() => {
-                    successToast({ message: "category Deleted Successfully" });
-                    successToast({ message: "Refresh the page" });
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    errorToast({ message: "something went wrong" });
-                  });
-              }}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="text-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(banner._id)}
+              >
+                Copy Banner ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  deleteItem(_id)
+                    .then(() => {
+                      successToast({
+                        message: "Category Deleted Successfully",
+                      });
+                      successToast({ message: "Refresh the page" });
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                      errorToast({ message: "Something went wrong" });
+                    });
+                }}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       );
     },
   },

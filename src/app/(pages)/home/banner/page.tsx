@@ -65,7 +65,9 @@ export const BannerColumns: ColumnDef<Banner>[] = [
   {
     accessorKey: "_id",
     header: "ID",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("_id")}</div>,
+    cell: ({ row }) => (
+      <div className="text-center capitalize">{row.getValue("_id")}</div>
+    ),
   },
   // title
   {
@@ -73,6 +75,7 @@ export const BannerColumns: ColumnDef<Banner>[] = [
     header: ({ column }) => (
       <Button
         variant="ghost"
+        className="w-full flex justify-center"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         <span className="mr-2">Title</span>
@@ -80,15 +83,16 @@ export const BannerColumns: ColumnDef<Banner>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
+      <div className="text-center capitalize">{row.getValue("title")}</div>
     ),
   },
-  // data
+  // date
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
       <Button
         variant="ghost"
+        className="w-full flex justify-center"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         <span className="mr-2">Date</span>
@@ -108,7 +112,7 @@ export const BannerColumns: ColumnDef<Banner>[] = [
         hour12: true,
       });
       return (
-        <div className="capitalize">
+        <div className="text-center capitalize">
           {DateD} - {time}
         </div>
       );
@@ -117,13 +121,19 @@ export const BannerColumns: ColumnDef<Banner>[] = [
   // image
   {
     accessorKey: "image",
-    header: "Image",
+    header: ({ column }) => (
+      <Button variant="ghost" className="w-full flex justify-center">
+        <span className="mr-2">Image</span>
+      </Button>
+    ),
     cell: ({ row }) => (
-      <img
-        src={row.getValue("image")}
-        alt="Banner"
-        className="h-44 w-96 shadow object-cover rounded-md"
-      />
+      <div className="flex justify-center">
+        <img
+          src={row.getValue("image")}
+          alt="Banner"
+          className="h-44 w-96 shadow object-cover rounded-md"
+        />
+      </div>
     ),
   },
   // actions
