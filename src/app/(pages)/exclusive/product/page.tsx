@@ -132,7 +132,7 @@ const Page = ({}: Props) => {
       .finally(() => setCreateLoading(false));
   };
 
-  console.log(subcategory);
+  console.log(productData);
 
   return (
     <div>
@@ -175,12 +175,12 @@ const Page = ({}: Props) => {
             />
           </div>
           <div>
-            <Label htmlFor="quantity">
+            <Label htmlFor="stock">
               Product Quantity <span className="text-red-500">*</span>
             </Label>
             <Input
               type="number"
-              id="quantity"
+              id="stock"
               className="w-full"
               placeholder="Product Quantity"
               onChange={handleInputChange}

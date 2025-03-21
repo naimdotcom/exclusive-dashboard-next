@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Product } from "../product/page";
 import { DataTable } from "@/components/dataTable/FilterTable";
 import { useGetAllProductQuery } from "@/Features/api/Exclusive";
+import truncateWords from "@/utils/truncateWords";
 
 type Props = {};
 
@@ -82,9 +83,10 @@ export const productColumns: ColumnDef<Product>[] = [
         <span>Description</span>
       </Button>
     ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("description")}</div>
-    ),
+    cell: ({ row }) => {
+      const text = truncateWords(row.getValue("description"), 10);
+      return <div className="text-center">{text}...</div>;
+    },
   },
   {
     accessorKey: "price",
