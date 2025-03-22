@@ -21,7 +21,7 @@ import {
 import { Category } from "../../home/category/page";
 import { subCategory } from "../../home/sub-category/page";
 import { cn } from "@/lib/utils";
-import { Eye, Heart } from "lucide-react";
+import { Eye, Heart, Plus, X } from "lucide-react";
 import Link from "next/link";
 import StarReview from "@/components/common/Star";
 import { Button } from "@/components/ui/button";
@@ -64,6 +64,9 @@ const Page = ({}: Props) => {
     _id: "",
     color: "",
   });
+  const [images, setImages] = useState<(string | File)[]>([]);
+  const [deletedImage, setDeletedImage] = useState<string[]>([]);
+  const [updatedImageFile, setUpdatedImageFile] = useState<File[]>([]);
   const [subcategory, setSubcategory] = useState<[]>([]);
   const [createLoading, setCreateLoading] = useState<boolean>(false);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
@@ -110,6 +113,28 @@ const Page = ({}: Props) => {
     }
   };
 
+  const handleUpdateImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (images.length >= 4) {
+      errorToast({ message: "You can't upload more than 4 images" });
+    } else if (e.target.files && images.length < 4) {
+      const selectedImages = Array.from(e.target.files).slice(
+        0,
+        4 - images.length
+      );
+      setImages((prev) => [...prev, ...selectedImages]);
+      setUpdatedImageFile(selectedImages);
+    }
+  };
+
+  const handleDeleteImage = (image: string | File, index: number) => {
+    if (typeof image === "string") {
+      setDeletedImage((prev) => [...prev, image]);
+    } else {
+      setImages((prev) => prev.filter((_, i) => i !== index));
+      setUpdatedImageFile((prev) => prev.filter((im) => im !== image));
+    }
+  };
+
   const handleSubmit = async () => {
     setCreateLoading(true);
     if (
@@ -139,7 +164,6 @@ const Page = ({}: Props) => {
     formData.append("subcategoryId", productData.subCategory);
     formData.append("quantity", productData.stock.toString());
     formData.append("discount", productData.discount.toString());
-    productData.image.forEach((image) => formData.append("image", image));
 
     await createProduct(formData)
       .unwrap()
@@ -156,6 +180,37 @@ const Page = ({}: Props) => {
         console.log(err);
       })
       .finally(() => setCreateLoading(false));
+  };
+
+  const handleContentUpdate = async () => {
+    if (
+      !productData.name ||
+      !productData.description ||
+      productData.price <= 0 ||
+      productData.stock <= 0 ||
+      !productData.category ||
+      !productData.subCategory ||
+      productData.image.length === 0 ||
+      productData.discount < 0 ||
+      productData.rating < 0 ||
+      selectedSizes.length === 0
+    ) {
+      errorToast({ message: "Please fill all the required fields correctly" });
+      setCreateLoading(false);
+      return;
+    }
+
+    const data = {
+      name: productData.name,
+      description: productData.description,
+      price: productData.price,
+      rating: productData.rating,
+      stock: productData.stock,
+      size: productData.size,
+      color: productData.color,
+      category: productData.category,
+      subcategory: productData.subCategory,
+    };
   };
 
   useEffect(() => {
@@ -175,6 +230,7 @@ const Page = ({}: Props) => {
         color: productQuery.data.color,
         size: productQuery.data.size,
       });
+      setImages(productQuery.data.images);
     }
   }, [id, productQuery]);
 
@@ -186,6 +242,8 @@ const Page = ({}: Props) => {
       setSubcategory(selectedCategory?.subCategory || []);
     }
   }, [categories, productData.category]);
+
+  console.log(images, updatedImageFile, deletedImage);
 
   return (
     <div>
@@ -402,6 +460,68 @@ const Page = ({}: Props) => {
               : "Create Product"}
           </Button>
         </div>
+
+        {id && (
+          <div className="space-y-4">
+            <Label htmlFor="image">Product Image</Label>
+            <div className={cn("grid grid-cols-5 gap-1.5")}>
+              {images.map((image, index) => {
+                const imageUrl =
+                  typeof image === "string"
+                    ? image
+                    : URL.createObjectURL(image);
+                const isDeleted = deletedImage.includes(imageUrl);
+
+                return (
+                  <div key={imageUrl} className="relative">
+                    <img
+                      src={imageUrl}
+                      alt="Product"
+                      className="h-44 w-96 shadow object-cover rounded-md"
+                    />
+                    {isDeleted ? (
+                      <span
+                        className="absolute -top-2 -right-2 bg-red-500 p-1 text-white rounded-full cursor-pointer"
+                        onClick={() => {
+                          setDeletedImage((prev) =>
+                            prev.filter((i) => i !== imageUrl)
+                          );
+                        }}
+                      >
+                        <Plus size={14} />
+                      </span>
+                    ) : (
+                      <span
+                        className="absolute -top-2 -right-2 bg-red-500 p-1 text-white rounded-full cursor-pointer"
+                        onClick={() => handleDeleteImage(image, index)}
+                      >
+                        <X size={14} />
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+              {images.length < 4 && (
+                <Input
+                  id="image"
+                  accept="image/*"
+                  type="file"
+                  multiple
+                  onChange={handleUpdateImageChange}
+                  className={cn("ml-4")}
+                />
+              )}
+            </div>
+          </div>
+        )}
+
+        {id && (
+          <div>
+            <Button className="w-full mt-4" onClick={handleSubmit}>
+              update Image
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* preview */}
