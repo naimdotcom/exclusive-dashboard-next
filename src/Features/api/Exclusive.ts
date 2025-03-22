@@ -71,6 +71,20 @@ const exclusiveApi = createApi({
     getProductById: builder.query<any, any>({
       query: (id) => `/v1/product/${id}`,
     }),
+    updateProductById: builder.mutation<any, any>({
+      query: ({ id, data }) => ({
+        url: `/v1/product/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    updateProductImageById: builder.mutation<any, any>({
+      query: ({ id, data }) => ({
+        url: `/v1/product/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -89,4 +103,6 @@ export const {
   useDeleteSubCategoryMutation,
   useCreateProductMutation,
   useGetProductByIdQuery,
+  useUpdateProductByIdMutation,
+  useUpdateProductImageByIdMutation,
 } = exclusiveApi;

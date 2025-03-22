@@ -17,6 +17,8 @@ import {
   useCreateProductMutation,
   useGetAllCategoriesQuery,
   useGetProductByIdQuery,
+  useUpdateProductByIdMutation,
+  useUpdateProductImageByIdMutation,
 } from "@/Features/api/Exclusive";
 import { Category } from "../../home/category/page";
 import { subCategory } from "../../home/sub-category/page";
@@ -27,6 +29,7 @@ import StarReview from "@/components/common/Star";
 import { Button } from "@/components/ui/button";
 import { errorToast, successToast } from "@/utils/Toast/toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
 
 type Props = {};
 
@@ -72,6 +75,8 @@ const Page = ({}: Props) => {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const { data: categories } = useGetAllCategoriesQuery({});
   const [createProduct] = useCreateProductMutation();
+  const [updateProductByID] = useUpdateProductByIdMutation();
+  const [updateProductImageByID] = useUpdateProductImageByIdMutation();
   const { data: productQuery } = useGetProductByIdQuery(id);
 
   const clearForm = () => {
@@ -164,6 +169,7 @@ const Page = ({}: Props) => {
     formData.append("subcategoryId", productData.subCategory);
     formData.append("quantity", productData.stock.toString());
     formData.append("discount", productData.discount.toString());
+    productData.image.forEach((image) => formData.append("image", image));
 
     await createProduct(formData)
       .unwrap()
@@ -190,7 +196,6 @@ const Page = ({}: Props) => {
       productData.stock <= 0 ||
       !productData.category ||
       !productData.subCategory ||
-      productData.image.length === 0 ||
       productData.discount < 0 ||
       productData.rating < 0 ||
       selectedSizes.length === 0
@@ -210,7 +215,52 @@ const Page = ({}: Props) => {
       color: productData.color,
       category: productData.category,
       subcategory: productData.subCategory,
+      discount: productData.discount,
     };
+
+    await updateProductByID({
+      id: id,
+      data: data,
+    })
+      .then((res) => {
+        successToast({ message: "Product Updated Successfully" });
+        console.log("product updated", res);
+      })
+      .catch((err) => {
+        errorToast({
+          message: err.data.message
+            ? err.data.message
+            : "something went wrong while updating product",
+        });
+        console.log("error in update product", err);
+      });
+  };
+
+  const handleImageUpdate = async () => {
+    const formData = new FormData();
+    updatedImageFile.forEach((image) => {
+      formData.append("image", image);
+    });
+    deletedImage.forEach((image) => {
+      formData.append("imageInfo", image);
+    });
+
+    await updateProductImageByID({
+      id: id,
+      data: formData,
+    })
+      .then((res) => {
+        successToast({ message: "Product Updated Successfully" });
+        console.log("product updated", res);
+      })
+      .catch((err) => {
+        errorToast({
+          message: err.data.message
+            ? err.data.message
+            : "something went wrong while updating product",
+        });
+        console.log("error in update product", err);
+      });
   };
 
   useEffect(() => {
@@ -231,6 +281,7 @@ const Page = ({}: Props) => {
         size: productQuery.data.size,
       });
       setImages(productQuery.data.images);
+      setSelectedSizes(productQuery.data.size);
     }
   }, [id, productQuery]);
 
@@ -242,8 +293,6 @@ const Page = ({}: Props) => {
       setSubcategory(selectedCategory?.subCategory || []);
     }
   }, [categories, productData.category]);
-
-  console.log(images, updatedImageFile, deletedImage);
 
   return (
     <div>
@@ -312,20 +361,43 @@ const Page = ({}: Props) => {
               placeholder="Product Discount"
               onChange={handleInputChange}
               value={productData.discount}
+              min={0}
+              max={100}
             />
           </div>
           <div>
             <Label htmlFor="rating">
               Product Rating <span className="text-red-500">*</span>
             </Label>
-            <Input
+            {/* <Input
               type="number"
               id="rating"
               className="w-full"
               placeholder="Product Rating"
               onChange={handleInputChange}
               value={productData.rating}
-            />
+            /> */}
+            <div className="flex items-center gap-2 ">
+              <div className="text-sm border border-gray-400 px-1.5 py-2 rounded-md leading-none">
+                {productData.rating
+                  ? productData.rating % 1 == 0
+                    ? `${productData.rating}.0`
+                    : productData.rating
+                  : 1}
+              </div>
+              <Slider
+                defaultValue={[productData.rating ? productData.rating : 1.0]}
+                max={5}
+                min={1}
+                step={0.5}
+                onValueChange={(value: number[]) => {
+                  setProductData((prev) => ({
+                    ...prev,
+                    rating: value[0],
+                  }));
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -452,7 +524,12 @@ const Page = ({}: Props) => {
         </div>
 
         <div>
-          <Button className="w-full mt-4" onClick={handleSubmit}>
+          <Button
+            className="w-full mt-4"
+            onClick={() => {
+              id ? handleContentUpdate() : handleSubmit();
+            }}
+          >
             {id
               ? "Update Product"
               : createLoading
@@ -517,7 +594,7 @@ const Page = ({}: Props) => {
 
         {id && (
           <div>
-            <Button className="w-full mt-4" onClick={handleSubmit}>
+            <Button className="w-full mt-4" onClick={handleImageUpdate}>
               update Image
             </Button>
           </div>
