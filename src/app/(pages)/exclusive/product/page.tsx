@@ -369,21 +369,13 @@ const Page = ({}: Props) => {
             <Label htmlFor="rating">
               Product Rating <span className="text-red-500">*</span>
             </Label>
-            {/* <Input
-              type="number"
-              id="rating"
-              className="w-full"
-              placeholder="Product Rating"
-              onChange={handleInputChange}
-              value={productData.rating}
-            /> */}
             <div className="flex items-center gap-2 ">
-              <div className="text-sm border border-gray-400 px-1.5 py-2 rounded-md leading-none">
+              <div className="text-sm border border-gray-300 px-1.5 py-2 rounded-md leading-none">
                 {productData.rating
                   ? productData.rating % 1 == 0
                     ? `${productData.rating}.0`
                     : productData.rating
-                  : 1}
+                  : `1.0`}
               </div>
               <Slider
                 defaultValue={[productData.rating ? productData.rating : 1.0]}
