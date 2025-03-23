@@ -3,7 +3,7 @@ import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, RefreshCcw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,8 +16,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Product } from "../product/page";
 import { DataTable } from "@/components/dataTable/FilterTable";
-import { useGetAllProductQuery } from "@/Features/api/Exclusive";
+import {
+  useDeleteProductByIdMutation,
+  useGetAllProductQuery,
+} from "@/Features/api/Exclusive";
 import truncateWords from "@/utils/truncateWords";
+import { errorToast, successToast } from "@/utils/Toast/toast";
 
 export const productColumns: ColumnDef<Product>[] = [
   {
@@ -172,6 +176,7 @@ export const productColumns: ColumnDef<Product>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const product = row.original;
+      const [deleteProduct] = useDeleteProductByIdMutation();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -182,13 +187,28 @@ export const productColumns: ColumnDef<Product>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <a href={`/exclusive/product?id=${product._id}`} target="_blank">
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+            </a>
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(product._id)}
             >
               Copy Product ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={async () =>
+                deleteProduct(product._id)
+                  .then(() =>
+                    successToast({ message: `${product.name} deleted` })
+                  )
+                  .catch((err) =>
+                    errorToast({ message: "Somethin g went wrong" })
+                  )
+              }
+            >
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -199,11 +219,18 @@ export const productColumns: ColumnDef<Product>[] = [
 type Props = {};
 
 const page = ({}: Props) => {
-  const { data } = useGetAllProductQuery({});
+  const { data, refetch } = useGetAllProductQuery({});
   return (
     <div>
       <div className="mt-10">
-        table
+        <div className="flex items-center gap-x-4">
+          <h1>Product List</h1>
+          <RefreshCcw
+            size={16}
+            onClick={refetch}
+            className="cursor-pointer hover:bg-gray-200 rounded-full "
+          />
+        </div>
         <div>
           <DataTable<Product>
             data={data?.data ? data?.data : []}

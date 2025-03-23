@@ -85,6 +85,12 @@ const exclusiveApi = createApi({
         body: data,
       }),
     }),
+    deleteProductById: builder.mutation<any, any>({
+      query: (id) => ({
+        url: `/v1/product/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -105,4 +111,5 @@ export const {
   useGetProductByIdQuery,
   useUpdateProductByIdMutation,
   useUpdateProductImageByIdMutation,
+  useDeleteProductByIdMutation,
 } = exclusiveApi;

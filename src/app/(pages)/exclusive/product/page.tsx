@@ -77,7 +77,8 @@ const Page = ({}: Props) => {
   const [createProduct] = useCreateProductMutation();
   const [updateProductByID] = useUpdateProductByIdMutation();
   const [updateProductImageByID] = useUpdateProductImageByIdMutation();
-  const { data: productQuery } = useGetProductByIdQuery(id);
+  const { data: productQuery, refetch: productRefetch } =
+    useGetProductByIdQuery(id);
 
   const clearForm = () => {
     setProductData({
@@ -237,30 +238,35 @@ const Page = ({}: Props) => {
   };
 
   const handleImageUpdate = async () => {
-    const formData = new FormData();
-    updatedImageFile.forEach((image) => {
-      formData.append("image", image);
-    });
-    deletedImage.forEach((image) => {
-      formData.append("imageInfo", image);
-    });
+    if (!updatedImageFile?.length && !deletedImage?.length) {
+      errorToast({ message: "No changes to update" });
+      return;
+    }
 
-    await updateProductImageByID({
-      id: id,
-      data: formData,
-    })
-      .then((res) => {
-        successToast({ message: "Product Updated Successfully" });
-        console.log("product updated", res);
-      })
-      .catch((err) => {
-        errorToast({
-          message: err.data.message
-            ? err.data.message
-            : "something went wrong while updating product",
-        });
-        console.log("error in update product", err);
+    const formData = new FormData();
+    if (updatedImageFile?.length > 0) {
+      updatedImageFile.forEach((image) => {
+        formData.append("image", image);
       });
+    }
+
+    if (deletedImage?.length > 0) {
+      deletedImage.forEach((image) => {
+        formData.append("imageInfo", image);
+      });
+    }
+
+    try {
+      const res = await updateProductImageByID({ id, data: formData });
+      successToast({ message: "Product Updated Successfully" });
+      productRefetch();
+      console.log("product updated", res);
+    } catch (err) {
+      errorToast({
+        message: "Something went wrong while updating the product",
+      });
+      console.log("error in update product", err);
+    }
   };
 
   useEffect(() => {
@@ -293,6 +299,8 @@ const Page = ({}: Props) => {
       setSubcategory(selectedCategory?.subCategory || []);
     }
   }, [categories, productData.category]);
+
+  console.log("deleted image", deletedImage);
 
   return (
     <div>
@@ -379,9 +387,10 @@ const Page = ({}: Props) => {
               </div>
               <Slider
                 defaultValue={[productData.rating ? productData.rating : 1.0]}
+                value={[productData.rating ? productData.rating : 1.0]}
                 max={5}
-                min={1}
-                step={0.5}
+                min={0.1}
+                step={0.1}
                 onValueChange={(value: number[]) => {
                   setProductData((prev) => ({
                     ...prev,
