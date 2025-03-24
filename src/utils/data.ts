@@ -10,6 +10,8 @@ import {
   LayoutTemplate,
   TextQuote,
   ShoppingCart,
+  Truck,
+  PackageSearch,
 } from "lucide-react";
 
 const sidebarItem = {
@@ -62,7 +64,7 @@ const sidebarItem = {
     {
       title: "Exclusive",
       url: "/exclusive",
-      isAction: true,
+      isActive: true,
       icon: Bot,
       items: [
         {
@@ -73,12 +75,12 @@ const sidebarItem = {
         {
           title: "Product List",
           url: "/exclusive/product-list",
-          icon: ShoppingCart,
+          icon: PackageSearch,
         },
         {
-          title: "Category",
-          url: "#",
-          icon: ListMinus,
+          title: "Order",
+          url: "/exclusive/order",
+          icon: Truck,
         },
         {
           title: "Sub-Category",

@@ -91,6 +91,13 @@ const exclusiveApi = createApi({
         method: "DELETE",
       }),
     }),
+
+    getAllOrder: builder.query<any, any>({
+      query: () => "/v1/order",
+    }),
+    getOrderById: builder.query<any, any>({
+      query: (id) => `/v1/order/${id}`,
+    }),
   }),
 });
 
@@ -112,4 +119,6 @@ export const {
   useUpdateProductByIdMutation,
   useUpdateProductImageByIdMutation,
   useDeleteProductByIdMutation,
+  useGetAllOrderQuery,
+  useGetOrderByIdQuery,
 } = exclusiveApi;
